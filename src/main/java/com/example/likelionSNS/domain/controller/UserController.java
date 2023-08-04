@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -38,6 +39,17 @@ public class UserController {
 
         Map<String, String> responseBody = new HashMap<>();
         responseBody.put("message", "유저 정보가 수정되었습니다.");
+        return new ResponseEntity<>(responseBody, HttpStatus.OK);
+    }
+
+    // 프로필 사진 업로드
+    @PostMapping("/profile")
+    private ResponseEntity<Map<String, String>> uploadProfileImg(@RequestParam("image") MultipartFile imageFile) {
+        String username = SecurityUtils.getCurrentUsername();
+        userService.uploadProfileImg(username, imageFile);
+
+        Map<String, String> responseBody = new HashMap<>();
+        responseBody.put("message", "프로필 이미지가 업로드되었습니다.");
         return new ResponseEntity<>(responseBody, HttpStatus.OK);
     }
 }
