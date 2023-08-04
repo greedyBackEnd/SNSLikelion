@@ -23,6 +23,8 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    private String profileImg;
+
     private String phone;
 
     private String email;
@@ -36,5 +38,9 @@ public class User {
         this.phone = userUpdate.getPhone();
         this.email = userUpdate.getEmail();
         this.address = userUpdate.getAddress();
+    }
+
+    public void updateProfileImg(String imageUrl) {
+        this.profileImg = imageUrl;
     }
 }
