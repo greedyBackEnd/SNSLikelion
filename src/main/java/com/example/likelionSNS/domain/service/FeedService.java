@@ -71,6 +71,7 @@ public class FeedService {
         return FeedDetailResponseDto.of(feedEntity);
     }
 
+    // 피드 단일 조회
     public FeedDetailResponseDto getFeed(Long id) {
         Feed feedEntity = feedRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("해당 피드를 찾을 수 없습니다."));
@@ -81,10 +82,24 @@ public class FeedService {
         return FeedDetailResponseDto.of(feedEntity, imageUrls);
     }
 
+    // 피드 전체 조회 (특정 유저)
     public List<FeedListResponseDto> getUserFeeds(String username) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("해당 유저를 찾을 수 없습니다." + username));
-        return feedRepository.findByUser(user).stream()
+        return feedRepository.findByUserAndDraftFalse(user).stream()
+                .map(feed -> {
+                    String imageUrl = feed.getFeedImages().get(0).getImageUrl();
+                    return FeedListResponseDto.of(feed, imageUrl);
+                })
+                .collect(Collectors.toList());
+    }
+
+    // 임시 저장된 피드 전체 조회
+    public List<FeedListResponseDto> getUserDraftFeeds(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("해당 유저를 찾을 수 없습니다." + username));
+
+        return feedRepository.findByUserAndDraftTrue(user).stream()
                 .map(feed -> {
                     String imageUrl = feed.getFeedImages().get(0).getImageUrl();
                     return FeedListResponseDto.of(feed, imageUrl);

@@ -67,7 +67,6 @@ public class FeedController {
     // 피드 단일 조회
     @GetMapping("/{id}")
     public ResponseEntity<FeedDetailResponseDto> getFeed(@PathVariable Long id) {
-        log.info(String.valueOf(feedService.getFeed(id)));
         return new ResponseEntity<>(feedService.getFeed(id), HttpStatus.OK);
     }
 
@@ -76,4 +75,12 @@ public class FeedController {
     public ResponseEntity<List<FeedListResponseDto>> getUserFeeds(@PathVariable String username) {
         return new ResponseEntity<>(feedService.getUserFeeds(username), HttpStatus.OK);
     }
+
+    // 임시 저장된 피드 전체 조회
+    @GetMapping("/draft")
+    public ResponseEntity<List<FeedListResponseDto>> getDraftFeeds() {
+        String username = SecurityUtils.getCurrentUsername();
+        return new ResponseEntity<>(feedService.getUserDraftFeeds(username), HttpStatus.OK);
+    }
+
 }
