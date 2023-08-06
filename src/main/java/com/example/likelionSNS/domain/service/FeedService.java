@@ -1,7 +1,8 @@
 package com.example.likelionSNS.domain.service;
 
 import com.example.likelionSNS.domain.dto.request.FeedRegisterRequestDto;
-import com.example.likelionSNS.domain.dto.response.FeedResponseDto;
+import com.example.likelionSNS.domain.dto.response.FeedDetailResponseDto;
+import com.example.likelionSNS.domain.dto.response.FeedListResponseDto;
 import com.example.likelionSNS.domain.entity.feed.Feed;
 import com.example.likelionSNS.domain.entity.feed.FeedImages;
 import com.example.likelionSNS.domain.entity.user.User;
@@ -9,6 +10,7 @@ import com.example.likelionSNS.domain.repository.FeedImagesRepository;
 import com.example.likelionSNS.domain.repository.FeedRepository;
 import com.example.likelionSNS.domain.repository.UserRepository;
 import com.example.likelionSNS.utils.FileUploadUtils;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -19,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -35,7 +38,7 @@ public class FeedService {
     private final FeedImagesRepository feedImagesRepository;
 
     // 피드 등록
-    public FeedResponseDto registerFeed(String username, FeedRegisterRequestDto requestDto, List<MultipartFile> imageFiles, boolean isDraft) {
+    public FeedDetailResponseDto registerFeed(String username, FeedRegisterRequestDto requestDto, List<MultipartFile> imageFiles, boolean isDraft) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("해당 유저를 찾을 수 없습니다." + username));
 
@@ -65,7 +68,28 @@ public class FeedService {
             }
         }
 
-        return FeedResponseDto.of(feedEntity);
+        return FeedDetailResponseDto.of(feedEntity);
+    }
+
+    public FeedDetailResponseDto getFeed(Long id) {
+        Feed feedEntity = feedRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("해당 피드를 찾을 수 없습니다."));
+        List<String> imageUrls = feedEntity.getFeedImages().stream()
+                .map(FeedImages::getImageUrl)
+                .collect(Collectors.toList());
+
+        return FeedDetailResponseDto.of(feedEntity, imageUrls);
+    }
+
+    public List<FeedListResponseDto> getUserFeeds(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("해당 유저를 찾을 수 없습니다." + username));
+        return feedRepository.findByUser(user).stream()
+                .map(feed -> {
+                    String imageUrl = feed.getFeedImages().get(0).getImageUrl();
+                    return FeedListResponseDto.of(feed, imageUrl);
+                })
+                .collect(Collectors.toList());
     }
 
     // 기본 이미지 설정
