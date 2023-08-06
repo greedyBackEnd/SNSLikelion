@@ -1,6 +1,7 @@
 package com.example.likelionSNS.domain.service;
 
 import com.example.likelionSNS.domain.dto.request.FeedRegisterRequestDto;
+import com.example.likelionSNS.domain.dto.request.FeedUpdateRequestDto;
 import com.example.likelionSNS.domain.dto.response.FeedDetailResponseDto;
 import com.example.likelionSNS.domain.dto.response.FeedListResponseDto;
 import com.example.likelionSNS.domain.entity.feed.Feed;
@@ -107,6 +108,44 @@ public class FeedService {
                 .collect(Collectors.toList());
     }
 
+    // 피드 수정
+    public FeedDetailResponseDto updateFeed(String username, Long id, FeedUpdateRequestDto requestDto, List<MultipartFile> imageFiles) {
+        Feed feed = feedRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("해당 피드를 찾을 수 없습니다."));
+
+        if (!feed.getUser().getUsername().equals(username)) {
+            throw new IllegalArgumentException("피드를 수정할 권한이 없습니다.");
+        }
+
+        feed.update(requestDto.toEntity());
+        feedRepository.save(feed);
+
+        if (!imageFiles.isEmpty()) {
+            // 기본 이미지 제거
+            removeDefaultImage(feed);
+            for (MultipartFile imageFile : imageFiles) {
+                try {
+                    String imageUrl = uploadImage(username, feed.getId(), imageFile);
+                    FeedImages feedImage = FeedImages.builder()
+                            .imageUrl(imageUrl)
+                            .feed(feed)
+                            .build();
+                    feedImagesRepository.save(feedImage);
+                } catch (IOException e) {
+                    throw new IllegalArgumentException("이미지 파일 업로드에 실패하였습니다.");
+                }
+            }
+        }
+
+        feedRepository.save(feed);
+
+        List<String> imageUrls = feed.getFeedImages().stream()
+                .map(FeedImages::getImageUrl)
+                .collect(Collectors.toList());
+
+        return FeedDetailResponseDto.of(feed, imageUrls);
+    }
+
     // 기본 이미지 설정
     private void attachDefaultImage(Feed feedEntity) {
         FeedImages defaultFeedImage = FeedImages.builder()
@@ -121,5 +160,17 @@ public class FeedService {
         String originalFileName = StringUtils.cleanPath(Objects.requireNonNull(imageFile.getOriginalFilename()));
         String uploadDir = String.format(UPLOAD_DIR_FORMAT, username, feedId);
         return FileUploadUtils.saveFile(uploadDir, originalFileName, imageFile);
+    }
+
+    // 기본 이미지 제거
+    private void removeDefaultImage(Feed feed) {
+        List<FeedImages> defaultImages = feed.getFeedImages().stream()
+                .filter(image -> image.getImageUrl().equals(DEFAULT_IMAGE_URL))
+                .collect(Collectors.toList());
+
+        defaultImages.forEach(defaultImage -> {
+            feed.getFeedImages().remove(defaultImage);
+            feedImagesRepository.delete(defaultImage);
+        });
     }
 }
