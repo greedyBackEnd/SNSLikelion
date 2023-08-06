@@ -2,6 +2,8 @@ package com.example.likelionSNS.domain.controller;
 
 
 import com.example.likelionSNS.domain.dto.request.FeedRegisterRequestDto;
+import com.example.likelionSNS.domain.dto.response.FeedDetailResponseDto;
+import com.example.likelionSNS.domain.dto.response.FeedListResponseDto;
 import com.example.likelionSNS.domain.service.FeedService;
 import com.example.likelionSNS.utils.SecurityUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -60,5 +62,18 @@ public class FeedController {
         Map<String, String> responseBody = new HashMap<>();
         responseBody.put("message", "피드가 등록되었습니다.");
         return new ResponseEntity<>(responseBody, HttpStatus.OK);
+    }
+
+    // 피드 단일 조회
+    @GetMapping("/{id}")
+    public ResponseEntity<FeedDetailResponseDto> getFeed(@PathVariable Long id) {
+        log.info(String.valueOf(feedService.getFeed(id)));
+        return new ResponseEntity<>(feedService.getFeed(id), HttpStatus.OK);
+    }
+
+    // 특정 유저 피드 조회
+    @GetMapping("/user/{username}")
+    public ResponseEntity<List<FeedListResponseDto>> getUserFeeds(@PathVariable String username) {
+        return new ResponseEntity<>(feedService.getUserFeeds(username), HttpStatus.OK);
     }
 }
