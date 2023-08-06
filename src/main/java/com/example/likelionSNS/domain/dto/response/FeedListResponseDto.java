@@ -6,20 +6,18 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class FeedResponseDto {
+public class FeedListResponseDto {
     private Long id;
     private String username;
     private String title;
-    private String content;
-    private boolean draft;
+    private String imageUrl;
 
-    public static FeedResponseDto of(Feed feed) {
-        return FeedResponseDto.builder()
+    public static FeedListResponseDto of(Feed feed, String imageUrl) {
+        return FeedListResponseDto.builder()
                 .id(feed.getId())
                 .username(feed.getUser().getUsername())
                 .title(feed.getTitle())
-                .content(feed.getContent())
-                .draft(feed.isDraft())
+                .imageUrl(imageUrl)
                 .build();
     }
 }
