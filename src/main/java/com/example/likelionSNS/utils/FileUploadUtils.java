@@ -20,6 +20,7 @@ public class FileUploadUtils {
     public static String saveFile(String uploadDir, String originalFileName, MultipartFile multipartFile) throws IOException {
         String extension = StringUtils.getFilenameExtension(originalFileName);
         String baseName = StringUtils.getFilename(originalFileName);
+        baseName = baseName.substring(0, baseName.lastIndexOf("."));
         String timeStamp = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss").format(new Date());
 
         // filename = timeStamp + UUID + originalFilename
