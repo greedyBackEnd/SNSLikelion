@@ -2,6 +2,7 @@ package com.example.likelionSNS.domain.controller;
 
 
 import com.example.likelionSNS.domain.dto.request.FeedRegisterRequestDto;
+import com.example.likelionSNS.domain.dto.request.FeedUpdateRequestDto;
 import com.example.likelionSNS.domain.dto.response.FeedDetailResponseDto;
 import com.example.likelionSNS.domain.dto.response.FeedListResponseDto;
 import com.example.likelionSNS.domain.service.FeedService;
@@ -83,4 +84,22 @@ public class FeedController {
         return new ResponseEntity<>(feedService.getUserDraftFeeds(username), HttpStatus.OK);
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<FeedDetailResponseDto> updateFeed(@PathVariable Long id,
+                                                            @RequestParam("feed") String feedStr,
+                                                            @RequestParam(value="files", required=false) List<MultipartFile> imageFiles) {
+
+        FeedUpdateRequestDto requestDto = null;
+        try {
+            requestDto = new ObjectMapper().readValue(feedStr, FeedUpdateRequestDto.class);
+        } catch (JsonProcessingException e) {
+            log.info(feedStr);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "잘못된 형식의 입력입니다.", e);
+        }
+        String username = SecurityUtils.getCurrentUsername();
+
+        FeedDetailResponseDto responseDto = feedService.updateFeed(username, id, requestDto, imageFiles == null ? Collections.emptyList() : imageFiles);
+
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+    }
 }
