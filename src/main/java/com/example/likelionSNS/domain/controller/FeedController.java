@@ -24,18 +24,26 @@ public class FeedController {
 
     private final FeedService feedService;
 
-//    @PostMapping
-//    public ResponseEntity<Map<String, String>> registerFeed(@RequestBody FeedRegisterRequestDto requestDto,
-//                                                            @RequestPart(value = "files", required = false) Optional<List<MultipartFile>> optionalMultipartFiles) {
-//        String username = SecurityUtils.getCurrentUsername();
-//        List<MultipartFile> imageFiles = optionalMultipartFiles.orElse(Collections.emptyList());
-//        feedService.registerFeed(username, requestDto, imageFiles);
-//
-//        Map<String, String> responseBody = new HashMap<>();
-//        responseBody.put("message", "피드가 등록되었습니다.");
-//        return new ResponseEntity<>(responseBody, HttpStatus.OK);
-//    }
+    // 피드 임시 저장
+    @PostMapping("/draft")
+    public ResponseEntity<Map<String, String>> draftFeed(@RequestParam("feed") String feedStr,
+                                                         @RequestParam(value="files", required=false) List<MultipartFile> imageFiles){
+        FeedRegisterRequestDto requestDto = null;
+        try {
+            requestDto = new ObjectMapper().readValue(feedStr, FeedRegisterRequestDto.class);
+        } catch (JsonProcessingException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "잘못된 형식의 입력입니다.", e);
+        }
+        String username = SecurityUtils.getCurrentUsername();
 
+        feedService.registerFeed(username, requestDto, imageFiles == null ? Collections.emptyList() : imageFiles, true);
+
+        Map<String, String> responseBody = new HashMap<>();
+        responseBody.put("message", "피드가 임시저장되었습니다.");
+        return new ResponseEntity<>(responseBody, HttpStatus.OK);
+    }
+
+    // 피드 등록
     @PostMapping
     public ResponseEntity<Map<String, String>> registerFeed(@RequestParam("feed") String feedStr,
                                                             @RequestParam(value="files", required=false) List<MultipartFile> imageFiles){
@@ -47,7 +55,7 @@ public class FeedController {
         }
         String username = SecurityUtils.getCurrentUsername();
 
-        feedService.registerFeed(username, requestDto, imageFiles == null ? Collections.emptyList() : imageFiles);
+        feedService.registerFeed(username, requestDto, imageFiles == null ? Collections.emptyList() : imageFiles, false);
 
         Map<String, String> responseBody = new HashMap<>();
         responseBody.put("message", "피드가 등록되었습니다.");

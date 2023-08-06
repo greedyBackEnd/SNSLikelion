@@ -35,7 +35,7 @@ public class FeedService {
     private final FeedImagesRepository feedImagesRepository;
 
     // 피드 등록
-    public FeedResponseDto registerFeed(String username, FeedRegisterRequestDto requestDto, List<MultipartFile> imageFiles) {
+    public FeedResponseDto registerFeed(String username, FeedRegisterRequestDto requestDto, List<MultipartFile> imageFiles, boolean isDraft) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("해당 유저를 찾을 수 없습니다." + username));
 
@@ -43,7 +43,7 @@ public class FeedService {
                 .user(user)
                 .title(requestDto.getTitle())
                 .content(requestDto.getContent())
-                .draft(false)
+                .draft(isDraft)
                 .build();
 
         feedEntity = feedRepository.save(feedEntity);
@@ -68,7 +68,7 @@ public class FeedService {
         return FeedResponseDto.of(feedEntity);
     }
 
-    // 기본 이미지 업로드
+    // 기본 이미지 설정
     private void attachDefaultImage(Feed feedEntity) {
         FeedImages defaultFeedImage = FeedImages.builder()
                 .imageUrl(DEFAULT_IMAGE_URL)
