@@ -3,6 +3,7 @@ package com.example.likelionSNS.config;
 import com.example.likelionSNS.jwt.JwtTokenFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -10,7 +11,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.intercept.AuthorizationFilter;
-import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
 @Configuration
 public class WebSecurityConfig {
@@ -30,6 +30,8 @@ public class WebSecurityConfig {
                         authHttp -> authHttp
                                 .requestMatchers("/api/v1/auth/**", "/token/issue").permitAll()
                                 .requestMatchers("/api/v1/users/**").authenticated()
+                                .requestMatchers( HttpMethod.GET,"/api/v1/feeds/**").permitAll()
+                                .requestMatchers( HttpMethod.GET,"/api/v1/feeds/user/**").permitAll()
 //                                .requestMatchers(HttpMethod.GET, "/api/v2/items/**").permitAll()
                                 .anyRequest().authenticated()
 //                                .anyRequest().permitAll()
