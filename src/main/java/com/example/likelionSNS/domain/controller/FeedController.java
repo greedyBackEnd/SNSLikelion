@@ -84,6 +84,7 @@ public class FeedController {
         return new ResponseEntity<>(feedService.getUserDraftFeeds(username), HttpStatus.OK);
     }
 
+    // 피드 수정
     @PutMapping("/{id}")
     public ResponseEntity<FeedDetailResponseDto> updateFeed(@PathVariable Long id,
                                                             @RequestParam("feed") String feedStr,
@@ -103,6 +104,7 @@ public class FeedController {
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 
+    // 피드 삭제
     @DeleteMapping("/{id}")
     public ResponseEntity<Map<String, String>> deleteFeed(@PathVariable Long id) {
         String username = SecurityUtils.getCurrentUsername();

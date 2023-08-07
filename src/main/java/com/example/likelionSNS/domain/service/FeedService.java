@@ -78,6 +78,11 @@ public class FeedService {
     public FeedDetailResponseDto getFeed(Long id) {
         Feed feedEntity = feedRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("해당 피드를 찾을 수 없습니다."));
+
+        if(feedEntity.isDeleted()) {
+            throw new IllegalArgumentException("삭제된 피드에 접근할 수 없습니다.");
+        }
+
         List<String> imageUrls = feedEntity.getFeedImages().stream()
                 .map(FeedImages::getImageUrl)
                 .collect(Collectors.toList());
@@ -90,6 +95,7 @@ public class FeedService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("해당 유저를 찾을 수 없습니다." + username));
         return feedRepository.findByUserAndDraftFalse(user).stream()
+                .filter(feed -> !feed.isDeleted())
                 .map(feed -> {
                     String imageUrl = feed.getFeedImages().get(0).getImageUrl();
                     return FeedListResponseDto.of(feed, imageUrl);
@@ -103,6 +109,7 @@ public class FeedService {
                 .orElseThrow(() -> new UsernameNotFoundException("해당 유저를 찾을 수 없습니다." + username));
 
         return feedRepository.findByUserAndDraftTrue(user).stream()
+                .filter(feed -> !feed.isDeleted())
                 .map(feed -> {
                     String imageUrl = feed.getFeedImages().get(0).getImageUrl();
                     return FeedListResponseDto.of(feed, imageUrl);
@@ -115,6 +122,10 @@ public class FeedService {
     public FeedDetailResponseDto updateFeed(String username, Long id, FeedUpdateRequestDto requestDto, List<MultipartFile> imageFiles) {
         Feed feed = feedRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("해당 피드를 찾을 수 없습니다."));
+
+        if(feed.isDeleted()) {
+            throw new IllegalArgumentException("삭제된 피드를 수정할 수 없습니다.");
+        }
 
         if (!feed.getUser().getUsername().equals(username)) {
             throw new IllegalArgumentException("피드를 수정할 권한이 없습니다.");
