@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -39,6 +40,7 @@ public class FeedService {
     private final FeedImagesRepository feedImagesRepository;
 
     // 피드 등록
+    @Transactional
     public FeedDetailResponseDto registerFeed(String username, FeedRegisterRequestDto requestDto, List<MultipartFile> imageFiles, boolean isDraft) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("해당 유저를 찾을 수 없습니다." + username));
@@ -109,6 +111,7 @@ public class FeedService {
     }
 
     // 피드 수정
+    @Transactional
     public FeedDetailResponseDto updateFeed(String username, Long id, FeedUpdateRequestDto requestDto, List<MultipartFile> imageFiles) {
         Feed feed = feedRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("해당 피드를 찾을 수 없습니다."));
@@ -144,6 +147,24 @@ public class FeedService {
                 .collect(Collectors.toList());
 
         return FeedDetailResponseDto.of(feed, imageUrls);
+    }
+
+    // 피드 삭제
+    @Transactional
+    public void deleteFeed(String username, Long id) {
+        Feed feed = feedRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("해당 피드를 찾을 수 없습니다."));
+
+        if (!feed.getUser().getUsername().equals(username)) {
+            throw new IllegalArgumentException("피드를 수정할 권한이 없습니다.");
+        }
+
+        if (feed.isDeleted()) {
+            throw new IllegalArgumentException("이미 삭제된 피드입니다.");
+        }
+
+        feed.delete();
+        feedRepository.save(feed);
     }
 
     // 기본 이미지 설정

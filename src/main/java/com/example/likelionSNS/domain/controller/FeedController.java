@@ -102,4 +102,14 @@ public class FeedController {
 
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Map<String, String>> deleteFeed(@PathVariable Long id) {
+        String username = SecurityUtils.getCurrentUsername();
+        feedService.deleteFeed(username, id);
+
+        Map<String, String> responseBody = new HashMap<>();
+        responseBody.put("message", "피드가 삭제되었습니다.");
+        return new ResponseEntity<>(responseBody, HttpStatus.OK);
+    }
 }
