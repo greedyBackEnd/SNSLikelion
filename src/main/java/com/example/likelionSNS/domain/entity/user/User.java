@@ -1,17 +1,21 @@
 package com.example.likelionSNS.domain.entity.user;
 
+import com.example.likelionSNS.domain.entity.BaseEntity;
+import com.example.likelionSNS.domain.entity.feed.Feed;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
+import java.util.List;
+
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SuperBuilder
 @Table(name = "users")
-public class User {
+public class User extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,6 +34,9 @@ public class User {
     private String email;
 
     private String address;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Feed> feeds;
 
     public void updateUser(User userUpdate) {
         if (userUpdate.getPassword() != null) {
