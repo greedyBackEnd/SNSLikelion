@@ -1,6 +1,7 @@
 package com.example.likelionSNS.domain.controller;
 
 import com.example.likelionSNS.domain.dto.request.UserUpdateDto;
+import com.example.likelionSNS.domain.dto.response.FollowResponseDto;
 import com.example.likelionSNS.domain.dto.response.UserResponseDto;
 import com.example.likelionSNS.domain.service.UserService;
 import com.example.likelionSNS.utils.SecurityUtils;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -73,5 +75,14 @@ public class UserController {
         Map<String, String> responseBody = new HashMap<>();
         responseBody.put("message", "팔로우가 취소되었습니다.");
         return new ResponseEntity<>(responseBody, HttpStatus.OK);
+    }
+
+    // 팔로우 목록 반환
+    @GetMapping("/followers")
+    public ResponseEntity<List<FollowResponseDto>> getFollowings() {
+        String username = SecurityUtils.getCurrentUsername();
+
+        List<FollowResponseDto> followers = userService.getFollowers(username);
+        return new ResponseEntity<>(followers, HttpStatus.OK);
     }
 }

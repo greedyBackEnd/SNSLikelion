@@ -1,6 +1,7 @@
 package com.example.likelionSNS.domain.service;
 
 import com.example.likelionSNS.domain.dto.request.UserUpdateDto;
+import com.example.likelionSNS.domain.dto.response.FollowResponseDto;
 import com.example.likelionSNS.domain.dto.response.UserResponseDto;
 import com.example.likelionSNS.domain.entity.user.User;
 import com.example.likelionSNS.domain.repository.UserRepository;
@@ -14,7 +15,9 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -72,5 +75,14 @@ public class UserService {
         User targetUser = userRepository.findById(targetUserId)
                 .orElseThrow(() -> new EntityNotFoundException("Target user not found"));
         user.unfollow(targetUser);
+    }
+
+    public List<FollowResponseDto> getFollowers(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("해당 유저를 찾을 수 없습니다." + username));
+
+        return user.getFollowers().stream()
+                .map(FollowResponseDto::of)
+                .collect(Collectors.toList());
     }
 }
