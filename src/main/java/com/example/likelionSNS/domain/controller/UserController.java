@@ -52,4 +52,26 @@ public class UserController {
         responseBody.put("message", "프로필 이미지가 업로드되었습니다.");
         return new ResponseEntity<>(responseBody, HttpStatus.OK);
     }
+
+    // 유저 팔로우
+    @PostMapping("/follow/{targetUserId}")
+    public ResponseEntity<Map<String, String>> followUser(@PathVariable Long targetUserId) {
+        String username = SecurityUtils.getCurrentUsername();
+        userService.follow(username, targetUserId);
+
+        Map<String, String> responseBody = new HashMap<>();
+        responseBody.put("message", "팔로우되었습니다.");
+        return new ResponseEntity<>(responseBody, HttpStatus.OK);
+    }
+
+    // 유저 언팔로우
+    @PostMapping("/unfollow/{targetUserId}")
+    public ResponseEntity<Map<String, String>> unfollowUser(@PathVariable Long targetUserId) {
+        String username = SecurityUtils.getCurrentUsername();
+        userService.unfollow(username, targetUserId);
+
+        Map<String, String> responseBody = new HashMap<>();
+        responseBody.put("message", "팔로우가 취소되었습니다.");
+        return new ResponseEntity<>(responseBody, HttpStatus.OK);
+    }
 }
