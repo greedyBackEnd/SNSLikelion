@@ -1,6 +1,8 @@
 package com.example.likelionSNS.domain.controller;
 
 import com.example.likelionSNS.domain.dto.request.CommentRegistrationDto;
+import com.example.likelionSNS.domain.dto.request.CommentUpdateRequestDto;
+import com.example.likelionSNS.domain.dto.response.CommentResponseDto;
 import com.example.likelionSNS.domain.service.CommentService;
 import com.example.likelionSNS.utils.SecurityUtils;
 import lombok.RequiredArgsConstructor;
@@ -28,5 +30,16 @@ public class CommentController {
         Map<String, String> responseBody = new HashMap<>();
         responseBody.put("message", "댓글이 작성되었습니다.");
         return new ResponseEntity<>(responseBody, HttpStatus.OK);
+    }
+
+    // 댓글 수정
+    @PutMapping("/{commentId}")
+    public ResponseEntity<CommentResponseDto> updateComment(@PathVariable Long feedId,
+                                                            @PathVariable Long commentId,
+                                                            @RequestBody CommentUpdateRequestDto requestDto) {
+        String username = SecurityUtils.getCurrentUsername();
+
+        CommentResponseDto responseDto = commentService.updateComment(username, feedId, commentId, requestDto);
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 }

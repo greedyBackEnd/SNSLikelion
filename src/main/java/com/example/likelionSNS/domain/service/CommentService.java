@@ -1,6 +1,7 @@
 package com.example.likelionSNS.domain.service;
 
 import com.example.likelionSNS.domain.dto.request.CommentRegistrationDto;
+import com.example.likelionSNS.domain.dto.request.CommentUpdateRequestDto;
 import com.example.likelionSNS.domain.dto.response.CommentResponseDto;
 import com.example.likelionSNS.domain.entity.comment.Comment;
 import com.example.likelionSNS.domain.entity.feed.Feed;
@@ -39,6 +40,25 @@ public class CommentService {
                 .build();
 
         comment = commentRepository.save(comment);
+
+        return CommentResponseDto.of(comment);
+    }
+
+    // 댓글 수정
+    @Transactional
+    public CommentResponseDto updateComment(String username, Long feedId, Long commentId, CommentUpdateRequestDto requestDto) {
+        Feed feed = feedRepository.findById(feedId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 피드를 찾을 수 없습니다."));
+
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 댓글을 찾을 수 없습니다."));
+
+        if (!comment.getUser().getUsername().equals(username)) {
+            throw new IllegalArgumentException("댓글을 수정할 권한이 없습니다.");
+        }
+
+        comment.updateComment(requestDto.toEntity());
+        commentRepository.save(comment);
 
         return CommentResponseDto.of(comment);
     }
