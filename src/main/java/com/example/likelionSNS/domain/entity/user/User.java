@@ -1,6 +1,7 @@
 package com.example.likelionSNS.domain.entity.user;
 
 import com.example.likelionSNS.domain.entity.BaseEntity;
+import com.example.likelionSNS.domain.entity.comment.Comment;
 import com.example.likelionSNS.domain.entity.feed.Feed;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -37,6 +38,9 @@ public class User extends BaseEntity {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Feed> feeds;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Comment> comments;
 
     public void updateUser(User userUpdate) {
         if (userUpdate.getPassword() != null) {
