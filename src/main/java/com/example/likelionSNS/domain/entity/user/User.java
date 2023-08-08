@@ -60,6 +60,27 @@ public class User extends BaseEntity {
     )
     private Set<User> followers = new HashSet<>();
 
+    @ManyToMany
+    @JoinTable(
+            name = "friends",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "friend_id")
+    )
+    private Set<User> friends = new HashSet<>();
+
+    @OneToMany(mappedBy = "requester")
+    private List<FriendRequest> friendRequests;
+
+    public void addFriend(User friend) {
+        friends.add(friend);
+        friend.getFriends().add(this);
+    }
+
+    public void removeFriend(User friend) {
+        friends.remove(friend);
+        friend.getFriends().remove(this);
+    }
+
     public void follow(User targetUser) {
         followers.add(targetUser);
     }
