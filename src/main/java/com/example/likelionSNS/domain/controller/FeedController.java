@@ -1,7 +1,7 @@
 package com.example.likelionSNS.domain.controller;
 
 
-import com.example.likelionSNS.domain.dto.request.FeedRegisterRequestDto;
+import com.example.likelionSNS.domain.dto.request.FeedRegistrationDto;
 import com.example.likelionSNS.domain.dto.request.FeedUpdateRequestDto;
 import com.example.likelionSNS.domain.dto.response.FeedDetailResponseDto;
 import com.example.likelionSNS.domain.dto.response.FeedListResponseDto;
@@ -31,9 +31,9 @@ public class FeedController {
     @PostMapping("/draft")
     public ResponseEntity<Map<String, String>> draftFeed(@RequestParam("feed") String feedStr,
                                                          @RequestParam(value="files", required=false) List<MultipartFile> imageFiles){
-        FeedRegisterRequestDto requestDto = null;
+        FeedRegistrationDto requestDto = null;
         try {
-            requestDto = new ObjectMapper().readValue(feedStr, FeedRegisterRequestDto.class);
+            requestDto = new ObjectMapper().readValue(feedStr, FeedRegistrationDto.class);
         } catch (JsonProcessingException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "잘못된 형식의 입력입니다.", e);
         }
@@ -50,9 +50,9 @@ public class FeedController {
     @PostMapping
     public ResponseEntity<Map<String, String>> registerFeed(@RequestParam("feed") String feedStr,
                                                             @RequestParam(value="files", required=false) List<MultipartFile> imageFiles){
-        FeedRegisterRequestDto requestDto = null;
+        FeedRegistrationDto requestDto = null;
         try {
-            requestDto = new ObjectMapper().readValue(feedStr, FeedRegisterRequestDto.class);
+            requestDto = new ObjectMapper().readValue(feedStr, FeedRegistrationDto.class);
         } catch (JsonProcessingException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "잘못된 형식의 입력입니다.", e);
         }
