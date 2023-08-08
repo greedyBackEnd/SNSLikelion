@@ -104,6 +104,11 @@ public class UserService {
             throw new IllegalArgumentException("자기 자신에게 친구 요청을 할 수 없습니다.");
         }
 
+        // 이미 친구인 경우에 대한 검증
+        if (requester.getFriends().contains(receiver) || receiver.getFriends().contains(requester)) {
+            throw new IllegalArgumentException("이미 친구인 사용자에게는 친구 요청을 할 수 없습니다.");
+        }
+
         FriendRequest friendRequest = FriendRequest.builder()
                 .requester(requester)
                 .receiver(receiver)
