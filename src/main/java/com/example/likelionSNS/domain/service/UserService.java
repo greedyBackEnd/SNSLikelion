@@ -3,10 +3,11 @@ package com.example.likelionSNS.domain.service;
 import com.example.likelionSNS.domain.dto.request.UserUpdateDto;
 import com.example.likelionSNS.domain.dto.response.FollowResponseDto;
 import com.example.likelionSNS.domain.dto.response.UserResponseDto;
+import com.example.likelionSNS.domain.entity.user.FriendRequest;
 import com.example.likelionSNS.domain.entity.user.User;
+import com.example.likelionSNS.domain.repository.FriendRequestRepository;
 import com.example.likelionSNS.domain.repository.UserRepository;
 import com.example.likelionSNS.utils.FileUploadUtils;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,7 @@ import java.util.stream.Collectors;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final FriendRequestRepository friendRequestRepository;
 
     // 유저 정보 조회
     public UserResponseDto getUserProfile(String username) {
@@ -88,5 +90,41 @@ public class UserService {
         return user.getFollowers().stream()
                 .map(FollowResponseDto::of)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void sendFriendRequest(String username, Long targetUserId) {
+        User requester = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("해당 유저를 찾을 수 없습니다." + username));
+
+        User receiver = userRepository.findById(targetUserId)
+                .orElseThrow(() -> new UsernameNotFoundException("해당 유저를 찾을 수 없습니다." + targetUserId));
+
+        if (requester.equals(receiver)) {
+            throw new IllegalArgumentException("자기 자신에게 친구 요청을 할 수 없습니다.");
+        }
+
+        FriendRequest friendRequest = FriendRequest.builder()
+                .requester(requester)
+                .receiver(receiver)
+                .build();
+
+        friendRequestRepository.save(friendRequest);
+    }
+
+    @Transactional
+    public void acceptFriendRequest(Long requestId) {
+        FriendRequest request = friendRequestRepository.findById(requestId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 친구 요청을 찾을 수 없습니다."));
+
+        request.getRequester().addFriend(request.getReceiver());
+        friendRequestRepository.delete(request);
+    }
+
+    @Transactional
+    public void rejectFriendRequest(Long requestId) {
+        FriendRequest request = friendRequestRepository.findById(requestId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 친구 요청을 찾을 수 없습니다."));
+        friendRequestRepository.delete(request);
     }
 }

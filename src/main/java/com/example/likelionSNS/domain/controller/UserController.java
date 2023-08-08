@@ -85,4 +85,32 @@ public class UserController {
         List<FollowResponseDto> followers = userService.getFollowers(username);
         return new ResponseEntity<>(followers, HttpStatus.OK);
     }
+
+    @PostMapping("/friend/request/{targetUserId}")
+    public ResponseEntity<Map<String, String>> sendFriendRequest(@PathVariable Long targetUserId) {
+        String username = SecurityUtils.getCurrentUsername();
+        userService.sendFriendRequest(username, targetUserId);
+
+        Map<String, String> responseBody = new HashMap<>();
+        responseBody.put("message", "친구 요청을 보냈습니다.");
+        return new ResponseEntity<>(responseBody, HttpStatus.OK);
+    }
+
+    @PostMapping("/friend/accept/{requestId}")
+    public ResponseEntity<Map<String, String>> acceptFriendRequest(@PathVariable Long requestId) {
+        userService.acceptFriendRequest(requestId);
+
+        Map<String, String> responseBody = new HashMap<>();
+        responseBody.put("message", "친구 요청을 수락하였습니다.");
+        return new ResponseEntity<>(responseBody, HttpStatus.OK);
+    }
+
+    @PostMapping("/friend/reject/{requestId}")
+    public ResponseEntity<Map<String, String>> rejectFriendRequest(@PathVariable Long requestId) {
+        userService.rejectFriendRequest(requestId);
+
+        Map<String, String> responseBody = new HashMap<>();
+        responseBody.put("message", "친구 요청을 거절하였습니다.");
+        return new ResponseEntity<>(responseBody, HttpStatus.OK);
+    }
 }
