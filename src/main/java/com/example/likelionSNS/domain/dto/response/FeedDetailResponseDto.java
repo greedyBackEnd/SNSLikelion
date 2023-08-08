@@ -16,6 +16,7 @@ public class FeedDetailResponseDto {
     private boolean draft;
     private List<String> imageUrls;
     private List<CommentResponseDto> comments;
+    private int likeCount;
 
     public static FeedDetailResponseDto of(Feed feed) {
         return FeedDetailResponseDto.builder()
@@ -36,6 +37,7 @@ public class FeedDetailResponseDto {
                 .draft(feed.isDraft())
                 .imageUrls(imageUrls)
                 .comments(comments)
+                .likeCount(feed.getLikers().size())
                 .build();
     }
 }
