@@ -22,6 +22,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -80,7 +81,7 @@ public class FeedService {
         Feed feedEntity = feedRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("해당 피드를 찾을 수 없습니다."));
 
-        if(feedEntity.isDeleted()) {
+        if (feedEntity.isDeleted()) {
             throw new IllegalArgumentException("삭제된 피드에 접근할 수 없습니다.");
         }
 
@@ -128,7 +129,7 @@ public class FeedService {
         Feed feed = feedRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("해당 피드를 찾을 수 없습니다."));
 
-        if(feed.isDeleted()) {
+        if (feed.isDeleted()) {
             throw new IllegalArgumentException("삭제된 피드를 수정할 수 없습니다.");
         }
 
@@ -237,4 +238,43 @@ public class FeedService {
             feedImagesRepository.delete(defaultImage);
         });
     }
+
+    // 팔로워의 피드 목록 조회
+    public List<FeedListResponseDto> getFollowedUserFeeds(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("해당 유저를 찾을 수 없습니다." + username));
+
+        List<Feed> feeds = user.getFollowers().stream()
+                .flatMap(follower -> follower.getFeeds().stream())
+                .filter(feed -> !feed.isDeleted() && !feed.isDraft())
+                .sorted(Comparator.comparing(Feed::getCreatedAt).reversed())
+                .collect(Collectors.toList());
+
+        return feeds.stream()
+                .map(feed -> {
+                    String imageUrl = feed.getFeedImages().get(0).getImageUrl();
+                    return FeedListResponseDto.of(feed, imageUrl);
+                })
+                .collect(Collectors.toList());
+    }
+
+    // 친구의 피드 목록 조회
+    public List<FeedListResponseDto> getFriendUserFeeds(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("해당 유저를 찾을 수 없습니다." + username));
+
+        List<Feed> feeds = user.getFriends().stream()
+                .flatMap(friend -> friend.getFeeds().stream())
+                .filter(feed -> !feed.isDeleted() && !feed.isDraft())
+                .sorted(Comparator.comparing(Feed::getCreatedAt).reversed())
+                .collect(Collectors.toList());
+
+        return feeds.stream()
+                .map(feed -> {
+                    String imageUrl = feed.getFeedImages().get(0).getImageUrl();
+                    return FeedListResponseDto.of(feed, imageUrl);
+                })
+                .collect(Collectors.toList());
+    }
+
 }

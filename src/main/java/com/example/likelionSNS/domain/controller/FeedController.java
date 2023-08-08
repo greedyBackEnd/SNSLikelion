@@ -125,4 +125,20 @@ public class FeedController {
         responseBody.put("message", resultStr);
         return new ResponseEntity<>(responseBody, HttpStatus.OK);
     }
+
+    // 팔로워 피드 목록 조회
+    @GetMapping("/followed")
+    public ResponseEntity<List<FeedListResponseDto>> getFollowedUserFeeds() {
+        String username = SecurityUtils.getCurrentUsername();
+        List<FeedListResponseDto> followedUserFeeds = feedService.getFollowedUserFeeds(username);
+        return ResponseEntity.ok(followedUserFeeds);
+    }
+
+    // 친구 피드 목록 조회
+    @GetMapping("/friends")
+    public ResponseEntity<List<FeedListResponseDto>> getFriendUserFeeds() {
+        String username = SecurityUtils.getCurrentUsername();
+        List<FeedListResponseDto> friendUserFeeds = feedService.getFriendUserFeeds(username);
+        return ResponseEntity.ok(friendUserFeeds);
+    }
 }
