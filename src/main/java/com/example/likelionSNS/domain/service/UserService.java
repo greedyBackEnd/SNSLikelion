@@ -62,8 +62,12 @@ public class UserService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("해당 유저를 찾을 수 없습니다." + username));
 
+        if (user.getId().equals(targetUserId)) {
+            throw new IllegalArgumentException("자신을 팔로우할 수 없습니다.");
+        }
+
         User targetUser = userRepository.findById(targetUserId)
-                .orElseThrow(() -> new EntityNotFoundException("Target user not found"));
+                .orElseThrow(() -> new UsernameNotFoundException("해당 유저를 찾을 수 없습니다." + username));
         user.follow(targetUser);
     }
 
@@ -73,7 +77,7 @@ public class UserService {
                 .orElseThrow(() -> new UsernameNotFoundException("해당 유저를 찾을 수 없습니다." + username));
 
         User targetUser = userRepository.findById(targetUserId)
-                .orElseThrow(() -> new EntityNotFoundException("Target user not found"));
+                .orElseThrow(() -> new UsernameNotFoundException("해당 유저를 찾을 수 없습니다." + username));
         user.unfollow(targetUser);
     }
 
