@@ -1,6 +1,6 @@
 package com.example.likelionSNS.domain.service;
 
-import com.example.likelionSNS.domain.dto.request.FeedRegisterRequestDto;
+import com.example.likelionSNS.domain.dto.request.FeedRegistrationDto;
 import com.example.likelionSNS.domain.dto.request.FeedUpdateRequestDto;
 import com.example.likelionSNS.domain.dto.response.FeedDetailResponseDto;
 import com.example.likelionSNS.domain.dto.response.FeedListResponseDto;
@@ -41,7 +41,7 @@ public class FeedService {
 
     // 피드 등록
     @Transactional
-    public FeedDetailResponseDto registerFeed(String username, FeedRegisterRequestDto requestDto, List<MultipartFile> imageFiles, boolean isDraft) {
+    public FeedDetailResponseDto registerFeed(String username, FeedRegistrationDto requestDto, List<MultipartFile> imageFiles, boolean isDraft) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("해당 유저를 찾을 수 없습니다." + username));
 
