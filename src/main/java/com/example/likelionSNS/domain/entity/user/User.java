@@ -52,6 +52,23 @@ public class User extends BaseEntity {
     )
     private Set<Feed> likedFeeds = new HashSet<>();
 
+    @ManyToMany
+    @JoinTable(
+            name = "user_follow",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "follow_id")
+    )
+    private Set<User> followings = new HashSet<>();
+
+    public void follow(User targetUser) {
+        followings.add(targetUser);
+    }
+
+    public void unfollow(User targetUser) {
+        followings.remove(targetUser);
+    }
+
+
     public void updateUser(User userUpdate) {
         if (userUpdate.getPassword() != null) {
             this.password = userUpdate.getPassword();
