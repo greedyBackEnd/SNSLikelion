@@ -1,8 +1,6 @@
 package com.example.likelionSNS.domain.dto.response;
 
 import com.example.likelionSNS.domain.entity.comment.Comment;
-import com.example.likelionSNS.domain.entity.feed.Feed;
-import com.example.likelionSNS.domain.entity.user.User;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -10,15 +8,13 @@ import lombok.Getter;
 @Builder
 public class CommentResponseDto {
     private Long id;
-    private User user;
-    private Feed feed;
+    private String username;
     private String content;
 
     public static CommentResponseDto of(Comment comment) {
         return CommentResponseDto.builder()
                 .id(comment.getId())
-                .user(comment.getUser())
-                .feed(comment.getFeed())
+                .username(comment.getUser().getUsername())
                 .content(comment.getContent())
                 .build();
     }
