@@ -2,6 +2,7 @@ package com.example.likelionSNS.domain.service;
 
 import com.example.likelionSNS.domain.dto.request.FeedRegistrationDto;
 import com.example.likelionSNS.domain.dto.request.FeedUpdateRequestDto;
+import com.example.likelionSNS.domain.dto.response.CommentResponseDto;
 import com.example.likelionSNS.domain.dto.response.FeedDetailResponseDto;
 import com.example.likelionSNS.domain.dto.response.FeedListResponseDto;
 import com.example.likelionSNS.domain.entity.feed.Feed;
@@ -87,7 +88,11 @@ public class FeedService {
                 .map(FeedImages::getImageUrl)
                 .collect(Collectors.toList());
 
-        return FeedDetailResponseDto.of(feedEntity, imageUrls);
+        List<CommentResponseDto> comments = feedEntity.getComments().stream()
+                .map(CommentResponseDto::of)
+                .collect(Collectors.toList());
+
+        return FeedDetailResponseDto.of(feedEntity, imageUrls, comments);
     }
 
     // 피드 전체 조회 (특정 유저)
@@ -157,7 +162,12 @@ public class FeedService {
                 .map(FeedImages::getImageUrl)
                 .collect(Collectors.toList());
 
-        return FeedDetailResponseDto.of(feed, imageUrls);
+        List<CommentResponseDto> comments = feed.getComments().stream()
+                .map(CommentResponseDto::of)
+                .collect(Collectors.toList());
+
+
+        return FeedDetailResponseDto.of(feed, imageUrls, comments);
     }
 
     // 피드 삭제

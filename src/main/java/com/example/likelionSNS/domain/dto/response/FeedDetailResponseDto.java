@@ -15,6 +15,7 @@ public class FeedDetailResponseDto {
     private String content;
     private boolean draft;
     private List<String> imageUrls;
+    private List<CommentResponseDto> comments;
 
     public static FeedDetailResponseDto of(Feed feed) {
         return FeedDetailResponseDto.builder()
@@ -26,7 +27,7 @@ public class FeedDetailResponseDto {
                 .build();
     }
 
-    public static FeedDetailResponseDto of(Feed feed, List<String> imageUrls) {
+    public static FeedDetailResponseDto of(Feed feed, List<String> imageUrls, List<CommentResponseDto> comments) {
         return FeedDetailResponseDto.builder()
                 .id(feed.getId())
                 .username(feed.getUser().getUsername())
@@ -34,6 +35,7 @@ public class FeedDetailResponseDto {
                 .content(feed.getContent())
                 .draft(feed.isDraft())
                 .imageUrls(imageUrls)
+                .comments(comments)
                 .build();
     }
 }

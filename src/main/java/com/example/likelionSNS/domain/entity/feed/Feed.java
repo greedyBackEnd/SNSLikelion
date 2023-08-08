@@ -1,6 +1,7 @@
 package com.example.likelionSNS.domain.entity.feed;
 
 import com.example.likelionSNS.domain.entity.BaseEntity;
+import com.example.likelionSNS.domain.entity.comment.Comment;
 import com.example.likelionSNS.domain.entity.user.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -9,6 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -36,8 +38,11 @@ public class Feed extends BaseEntity {
 
     private LocalDateTime deletedAt;
 
-    @OneToMany(mappedBy = "feed", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "feed", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<FeedImages> feedImages;
+
+    @OneToMany(mappedBy = "feed", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Comment> comments = new ArrayList<>();
 
     public void update(Feed feedUpdate) {
         this.title = feedUpdate.title;
