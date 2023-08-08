@@ -2,6 +2,7 @@ package com.example.likelionSNS.domain.service;
 
 import com.example.likelionSNS.domain.dto.request.UserUpdateDto;
 import com.example.likelionSNS.domain.dto.response.FollowResponseDto;
+import com.example.likelionSNS.domain.dto.response.FriendRequestResponseDto;
 import com.example.likelionSNS.domain.dto.response.UserResponseDto;
 import com.example.likelionSNS.domain.entity.user.FriendRequest;
 import com.example.likelionSNS.domain.entity.user.User;
@@ -132,4 +133,14 @@ public class UserService {
                 .orElseThrow(() -> new IllegalArgumentException("해당 친구 요청을 찾을 수 없습니다."));
         friendRequestRepository.delete(request);
     }
+
+    public List<FriendRequestResponseDto> getFriendRequests(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("해당 유저를 찾을 수 없습니다." + username));
+
+        return friendRequestRepository.findByReceiver(user).stream()
+                .map(FriendRequestResponseDto::of)
+                .collect(Collectors.toList());
+    }
+
 }
