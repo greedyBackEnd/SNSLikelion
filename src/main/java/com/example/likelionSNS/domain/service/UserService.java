@@ -45,6 +45,7 @@ public class UserService {
         userRepository.save(user);
     }
 
+    // 프로필 이미지 업로드
     @Transactional
     public void uploadProfileImg(String username, MultipartFile imageFile) {
         User user = userRepository.findByUsername(username)
@@ -61,6 +62,7 @@ public class UserService {
         }
     }
 
+    // 유저 팔로우
     @Transactional
     public void follow(String username, Long targetUserId) {
         User user = userRepository.findByUsername(username)
@@ -75,6 +77,7 @@ public class UserService {
         user.follow(targetUser);
     }
 
+    // 유저 언팔로우
     @Transactional
     public void unfollow(String username, Long targetUserId) {
         User user = userRepository.findByUsername(username)
@@ -85,6 +88,7 @@ public class UserService {
         user.unfollow(targetUser);
     }
 
+    // 팔로우 목록 조회
     public List<FollowResponseDto> getFollowers(String username) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("해당 유저를 찾을 수 없습니다." + username));
@@ -94,6 +98,7 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
+    // 친구 요청 보내기
     @Transactional
     public void sendFriendRequest(String username, Long targetUserId) {
         User requester = userRepository.findByUsername(username)
@@ -119,6 +124,7 @@ public class UserService {
         friendRequestRepository.save(friendRequest);
     }
 
+    // 친구 요청 수락
     @Transactional
     public void acceptFriendRequest(Long requestId) {
         FriendRequest request = friendRequestRepository.findById(requestId)
@@ -128,6 +134,8 @@ public class UserService {
         friendRequestRepository.delete(request);
     }
 
+
+    // 친구 요청 거절
     @Transactional
     public void rejectFriendRequest(Long requestId) {
         FriendRequest request = friendRequestRepository.findById(requestId)
@@ -135,6 +143,7 @@ public class UserService {
         friendRequestRepository.delete(request);
     }
 
+    // 친구 요청 목록 조회
     public List<FriendRequestResponseDto> getFriendRequests(String username) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("해당 유저를 찾을 수 없습니다." + username));
@@ -144,6 +153,7 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
+    // 친구 목록 조회
     public List<FriendResponseDto> getFriends(String username) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("해당 유저를 찾을 수 없습니다." + username));
