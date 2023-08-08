@@ -71,20 +71,24 @@ public class User extends BaseEntity {
     @OneToMany(mappedBy = "requester")
     private List<FriendRequest> friendRequests;
 
+    // 친구 추가
     public void addFriend(User friend) {
         friends.add(friend);
         friend.getFriends().add(this);
     }
 
+    // 친구 삭제
     public void removeFriend(User friend) {
         friends.remove(friend);
         friend.getFriends().remove(this);
     }
 
+    // 팔로우
     public void follow(User targetUser) {
         followers.add(targetUser);
     }
 
+    // 언팔로우
     public void unfollow(User targetUser) {
         followers.remove(targetUser);
     }
@@ -99,6 +103,7 @@ public class User extends BaseEntity {
         this.address = userUpdate.getAddress();
     }
 
+    // 프로필 이미지 업데이트
     public void updateProfileImg(String imageUrl) {
         this.profileImg = imageUrl;
     }

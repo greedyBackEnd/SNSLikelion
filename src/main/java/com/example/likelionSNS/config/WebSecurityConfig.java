@@ -30,11 +30,9 @@ public class WebSecurityConfig {
                         authHttp -> authHttp
                                 .requestMatchers("/api/v1/auth/**", "/token/issue").permitAll()
                                 .requestMatchers("/api/v1/users/**").authenticated()
-                                .requestMatchers( HttpMethod.GET,"/api/v1/feeds/**").permitAll()
-                                .requestMatchers( HttpMethod.GET,"/api/v1/feeds/user/**").permitAll()
-//                                .requestMatchers(HttpMethod.GET, "/api/v2/items/**").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/api/v1/feeds/**").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/api/v1/feeds/user/**").permitAll()
                                 .anyRequest().authenticated()
-//                                .anyRequest().permitAll()
                 )
                 .sessionManagement(
                         sessionManagement -> sessionManagement

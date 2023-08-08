@@ -55,14 +55,17 @@ public class Feed extends BaseEntity {
         this.draft = feedUpdate.draft;
     }
 
+    // 임시 저장 피드 배포
     public void publish() {
         this.draft = false;
     }
 
+    // 피드 삭제
     public void delete() {
         this.deletedAt = LocalDateTime.now();
     }
 
+    // 피드 삭제 확인
     public boolean isDeleted() {
         return this.deletedAt != null;
     }
