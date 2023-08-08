@@ -3,6 +3,7 @@ package com.example.likelionSNS.domain.controller;
 import com.example.likelionSNS.domain.dto.request.UserUpdateDto;
 import com.example.likelionSNS.domain.dto.response.FollowResponseDto;
 import com.example.likelionSNS.domain.dto.response.FriendRequestResponseDto;
+import com.example.likelionSNS.domain.dto.response.FriendResponseDto;
 import com.example.likelionSNS.domain.dto.response.UserResponseDto;
 import com.example.likelionSNS.domain.service.UserService;
 import com.example.likelionSNS.utils.SecurityUtils;
@@ -121,4 +122,12 @@ public class UserController {
         List<FriendRequestResponseDto> responseDtos = userService.getFriendRequests(username);
         return new ResponseEntity<>(responseDtos, HttpStatus.OK);
     }
+
+    @GetMapping("/friends")
+    private ResponseEntity<List<FriendResponseDto>> getFriends() {
+        String username = SecurityUtils.getCurrentUsername();
+        List<FriendResponseDto> friends = userService.getFriends(username);
+        return new ResponseEntity<>(friends, HttpStatus.OK);
+    }
+
 }
