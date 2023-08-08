@@ -188,6 +188,28 @@ public class FeedService {
         feedRepository.save(feed);
     }
 
+    // 피드 좋아요
+    @Transactional
+    public String likeFeed(String username, Long feedId) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("해당 유저를 찾을 수 없습니다." + username));
+
+        Feed feed = feedRepository.findById(feedId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 피드를 찾을 수 없습니다."));
+
+        if (feed.getUser().getUsername().equals(username)) {
+            throw new IllegalArgumentException("자신의 피드에는 좋아요를 할 수 없습니다.");
+        }
+
+        if (user.getLikedFeeds().contains(feed)) {
+            user.getLikedFeeds().remove(feed);  // 이미 좋아요 상태라면 좋아요 취소
+            return "좋아요 취소";
+        } else {
+            user.getLikedFeeds().add(feed);     // 좋아요 상태가 아니라면 좋아요 추가
+            return "좋아요";
+        }
+    }
+
     // 기본 이미지 설정
     private void attachDefaultImage(Feed feedEntity) {
         FeedImages defaultFeedImage = FeedImages.builder()

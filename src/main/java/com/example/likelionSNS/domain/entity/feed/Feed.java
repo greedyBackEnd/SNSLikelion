@@ -11,7 +11,9 @@ import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -43,6 +45,9 @@ public class Feed extends BaseEntity {
 
     @OneToMany(mappedBy = "feed", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Comment> comments = new ArrayList<>();
+
+    @ManyToMany(mappedBy = "likedFeeds")
+    private Set<User> likers = new HashSet<>();
 
     public void update(Feed feedUpdate) {
         this.title = feedUpdate.title;

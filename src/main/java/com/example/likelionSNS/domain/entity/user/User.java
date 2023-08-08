@@ -9,7 +9,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -41,6 +43,14 @@ public class User extends BaseEntity {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Comment> comments;
+
+    @ManyToMany
+    @JoinTable(
+            name = "like_feed",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "feed_id")
+    )
+    private Set<Feed> likedFeeds = new HashSet<>();
 
     public void updateUser(User userUpdate) {
         if (userUpdate.getPassword() != null) {

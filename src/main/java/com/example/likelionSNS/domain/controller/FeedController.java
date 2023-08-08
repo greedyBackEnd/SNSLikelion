@@ -30,7 +30,7 @@ public class FeedController {
     // 피드 임시 저장
     @PostMapping("/draft")
     public ResponseEntity<Map<String, String>> draftFeed(@RequestParam("feed") String feedStr,
-                                                         @RequestParam(value="files", required=false) List<MultipartFile> imageFiles){
+                                                         @RequestParam(value = "files", required = false) List<MultipartFile> imageFiles) {
         FeedRegistrationDto requestDto = null;
         try {
             requestDto = new ObjectMapper().readValue(feedStr, FeedRegistrationDto.class);
@@ -49,7 +49,7 @@ public class FeedController {
     // 피드 등록
     @PostMapping
     public ResponseEntity<Map<String, String>> registerFeed(@RequestParam("feed") String feedStr,
-                                                            @RequestParam(value="files", required=false) List<MultipartFile> imageFiles){
+                                                            @RequestParam(value = "files", required = false) List<MultipartFile> imageFiles) {
         FeedRegistrationDto requestDto = null;
         try {
             requestDto = new ObjectMapper().readValue(feedStr, FeedRegistrationDto.class);
@@ -88,7 +88,7 @@ public class FeedController {
     @PutMapping("/{id}")
     public ResponseEntity<FeedDetailResponseDto> updateFeed(@PathVariable Long id,
                                                             @RequestParam("feed") String feedStr,
-                                                            @RequestParam(value="files", required=false) List<MultipartFile> imageFiles) {
+                                                            @RequestParam(value = "files", required = false) List<MultipartFile> imageFiles) {
 
         FeedUpdateRequestDto requestDto = null;
         try {
@@ -112,6 +112,17 @@ public class FeedController {
 
         Map<String, String> responseBody = new HashMap<>();
         responseBody.put("message", "피드가 삭제되었습니다.");
+        return new ResponseEntity<>(responseBody, HttpStatus.OK);
+    }
+
+    // 피드 좋아요
+    @PostMapping("/{feedId}/like")
+    public ResponseEntity<Map<String, String>> likeFeed(@PathVariable Long feedId) {
+        String username = SecurityUtils.getCurrentUsername();
+        String resultStr = feedService.likeFeed(username, feedId);
+
+        Map<String, String> responseBody = new HashMap<>();
+        responseBody.put("message", resultStr);
         return new ResponseEntity<>(responseBody, HttpStatus.OK);
     }
 }
