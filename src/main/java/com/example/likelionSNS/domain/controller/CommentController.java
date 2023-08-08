@@ -42,4 +42,17 @@ public class CommentController {
         CommentResponseDto responseDto = commentService.updateComment(username, feedId, commentId, requestDto);
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
+
+    // 댓글 삭제
+    @DeleteMapping("/{commentId}")
+    public ResponseEntity<Map<String, String>> deleteComment(@PathVariable Long feedId,
+                                                             @PathVariable Long commentId) {
+        String username = SecurityUtils.getCurrentUsername();
+
+        commentService.deleteComment(username, feedId, commentId);
+
+        Map<String, String> responseBody = new HashMap<>();
+        responseBody.put("message", "댓글이 삭제되었습니다.");
+        return new ResponseEntity<>(responseBody, HttpStatus.OK);
+    }
 }

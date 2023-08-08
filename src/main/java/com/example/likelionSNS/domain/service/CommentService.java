@@ -62,4 +62,20 @@ public class CommentService {
 
         return CommentResponseDto.of(comment);
     }
+
+    // 댓글 삭제
+    @Transactional
+    public void deleteComment(String username, Long feedId, Long commentId) {
+        Feed feed = feedRepository.findById(feedId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 피드를 찾을 수 없습니다."));
+
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 댓글을 찾을 수 없습니다."));
+
+        if (!comment.getUser().getUsername().equals(username)) {
+            throw new IllegalArgumentException("댓글을 삭제할 권한이 없습니다.");
+        }
+
+        commentRepository.delete(comment);
+    }
 }
