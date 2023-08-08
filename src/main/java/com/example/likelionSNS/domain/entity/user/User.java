@@ -58,14 +58,14 @@ public class User extends BaseEntity {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "follow_id")
     )
-    private Set<User> followings = new HashSet<>();
+    private Set<User> followers = new HashSet<>();
 
     public void follow(User targetUser) {
-        followings.add(targetUser);
+        followers.add(targetUser);
     }
 
     public void unfollow(User targetUser) {
-        followings.remove(targetUser);
+        followers.remove(targetUser);
     }
 
 
